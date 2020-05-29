@@ -379,6 +379,67 @@ func (s *Storage) FeedByID(userID, feedID int64) (*model.Feed, error) {
 	return &feed, nil
 }
 
+// AnonFeedByID returns a feed by the ID.
+func (s *Storage) AnonFeedByID(feedID int64) (*model.Feed, error) {
+	var feed model.Feed
+	var iconID interface{}
+
+	query := `
+		SELECT
+			f.id,
+			f.feed_url,
+			f.site_url,
+			f.title,
+			f.etag_header,
+			f.last_modified_header,
+			f.parsing_error_count,
+			f.parsing_error_msg,
+			f.scraper_rules,
+			f.rewrite_rules,
+			f.crawler,
+			f.user_agent,
+			f.username,
+			f.password,
+			f.disabled,
+			fi.icon_id
+		FROM feeds f
+		LEFT JOIN feed_icons fi ON fi.feed_id=f.id
+		WHERE f.id=$1
+	`
+
+	err := s.db.QueryRow(query, feedID).Scan(
+		&feed.ID,
+		&feed.FeedURL,
+		&feed.SiteURL,
+		&feed.Title,
+		&feed.EtagHeader,
+		&feed.LastModifiedHeader,
+		&feed.ParsingErrorCount,
+		&feed.ParsingErrorMsg,
+		&feed.ScraperRules,
+		&feed.RewriteRules,
+		&feed.Crawler,
+		&feed.UserAgent,
+		&feed.Username,
+		&feed.Password,
+		&feed.Disabled,
+		&iconID,
+	)
+
+	switch {
+	case err == sql.ErrNoRows:
+		return nil, nil
+	case err != nil:
+		return nil, fmt.Errorf(`store: unable to fetch feed #%d: %v`, feedID, err)
+	}
+
+	if iconID != nil {
+		feed.Icon = &model.FeedIcon{FeedID: feed.ID, IconID: iconID.(int64)}
+	}
+
+	return &feed, nil
+}
+
 // CreateFeed creates a new feed.
 func (s *Storage) CreateFeed(feed *model.Feed) error {
 	sql := `
