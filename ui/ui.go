@@ -138,6 +138,7 @@ func Serve(router *mux.Router, store *storage.Storage, pool *worker.Pool, feedHa
 	uiRouter.Handle("/", middleware.handleAuthProxy(http.HandlerFunc(handler.showLoginPage))).Name("login").Methods(http.MethodGet)
 
 	// Public RSS
+	// TODO: Use a random id like with shares?
 	uiRouter.HandleFunc("/rss/{feedID}", handler.showRSSEntriesPage).Name("rssEntries").Methods("GET")
 
 	router.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
