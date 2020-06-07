@@ -29,6 +29,7 @@ func (h *handler) showRSSEntriesPage(w http.ResponseWriter, r *http.Request) {
 	builder := storage.NewAnonymousQueryBuilder(h.store)
 	builder.WithFeedID(feed.ID)
 	builder.WithOrder(model.DefaultSortingOrder)
+	builder.WithDirection("desc")
 	builder.WithOffset(offset)
 	builder.WithLimit(nbItemsPerPage)
 
