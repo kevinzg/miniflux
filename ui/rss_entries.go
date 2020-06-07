@@ -38,24 +38,42 @@ func (h *handler) showRSSEntriesPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Complete fields?
 	gorillaFeed := &feeds.Feed{
-		Title: feed.Title,
-		Link:  &feeds.Link{Href: feed.SiteURL},
+		Title:       feed.Title,
+		Link:        &feeds.Link{Href: feed.SiteURL},
+		Description: "RSS from Miniflux reader",
+		Updated:     feed.CheckedAt,
 	}
 
-	// TODO: Add author, enclosures, etc
 	for _, item := range entries {
-		gorillaFeed.Add(&feeds.Item{
+		entry := &feeds.Item{
 			Id:      strconv.FormatInt(item.ID, 10),
 			Title:   item.Title,
 			Link:    &feeds.Link{Href: item.URL},
 			Created: item.Date,
 			Updated: item.Date,
 			Content: item.Content,
-		})
+		}
+
+		// TODO: `item.Author` could be an email
+		if item.Author != "" {
+			entry.Author = &feeds.Author{
+				Name: item.Author,
+			}
+		}
+
+		if len(item.Enclosures) > 1 {
+			entry.Enclosure = &feeds.Enclosure{
+				Url:    item.Enclosures[0].URL,
+				Length: strconv.FormatInt(item.Enclosures[0].Size, 10),
+				Type:   item.Enclosures[0].MimeType,
+			}
+		}
+
+		gorillaFeed.Add(entry)
 	}
 
-	// TODO: Missing headers?
+	// TODO: Add cache headers?
+	w.Header().Set("Content-Type", "application/atom+xml")
 	gorillaFeed.WriteAtom(w)
 }
