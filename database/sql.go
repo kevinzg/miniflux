@@ -186,6 +186,9 @@ create index entries_user_feed_idx on entries (user_id, feed_id);
 	"schema_version_32": `alter table users add column entries_per_page int default 100;
 `,
 	"schema_version_33": `alter table users add column show_reading_time boolean default 't';`,
+	"schema_version_34": `alter table feeds add column score_extractor text default '';
+alter table entries add column score int default 0;
+`,
 	"schema_version_4": `create type entry_sorting_direction as enum('asc', 'desc');
 alter table users add column entry_direction entry_sorting_direction default 'asc';
 `,
@@ -242,6 +245,7 @@ var SqlMapChecksums = map[string]string{
 	"schema_version_31": "9290ef295731b03ddfe32dcaded0be70d41b63572420ad379cf2874a9b54581c",
 	"schema_version_32": "5b4de8dd2d7e3c6ae4150e0e3931df2ee989f2c667145bd67294e5a5f3fae456",
 	"schema_version_33": "bf38514efeb6c12511f41b1cc484f92722240b0a6ae874c32a958dfea3433d02",
+	"schema_version_34": "4ac968c8f1e9a5b2025c08e97c2d36976ee9d8636b2a5173472e657236c47ed9",
 	"schema_version_4":  "216ea3a7d3e1704e40c797b5dc47456517c27dbb6ca98bf88812f4f63d74b5d9",
 	"schema_version_5":  "46397e2f5f2c82116786127e9f6a403e975b14d2ca7b652a48cd1ba843e6a27c",
 	"schema_version_6":  "9d05b4fb223f0e60efc716add5048b0ca9c37511cf2041721e20505d6d798ce4",
