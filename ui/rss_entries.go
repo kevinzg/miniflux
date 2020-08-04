@@ -12,6 +12,9 @@ import (
 	"miniflux.app/storage"
 )
 
+// TODO: use ui/pagination?
+const nbItemsPerPage = 100
+
 func (h *handler) showRSSEntriesPage(w http.ResponseWriter, r *http.Request) {
 	feedID := request.RouteInt64Param(r, "feedID")
 	feed, err := h.store.AnonFeedByID(feedID)
