@@ -5,8 +5,14 @@
 package processor
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"strings"
 	"sync"
 
+	"miniflux.app/http/client"
 	"miniflux.app/logger"
 	"miniflux.app/model"
 	"miniflux.app/reader/rewrite"
@@ -17,6 +23,11 @@ import (
 
 // ProcessFeedEntries downloads original web page for entries and apply filters.
 func ProcessFeedEntries(store *storage.Storage, feed *model.Feed) {
+	err := ProcessScoreExtractor(feed)
+	if err != nil {
+		logger.Debug("[Feed #%d] Error extracting score: %v", feed.ID, err)
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(len(feed.Entries))
 
@@ -45,6 +56,65 @@ func ProcessFeedEntries(store *storage.Storage, feed *model.Feed) {
 		}(entry)
 	}
 	wg.Wait()
+}
+
+// ProcessScoreExtractor tries to obtain the score for the feed entries
+func ProcessScoreExtractor(feed *model.Feed) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.New(fmt.Sprintf("Panic while processing score extractor: %v", r))
+		}
+	}()
+
+	if feed.ScoreExtractor == "reddit" {
+		// Build id string
+		ids := make([]string, 0, len(feed.Entries))
+		idEntryMap := make(map[string]int)
+		for i, entry := range feed.Entries {
+			if entry.OriginalID != "" {
+				ids = append(ids, entry.OriginalID)
+				idEntryMap[entry.OriginalID] = i
+			}
+		}
+		idParam := strings.Join(ids, ",")
+
+		url := fmt.Sprintf("https://reddit.com/api/info.json?id=%s", idParam)
+		clt := client.New(url)
+		response, err := clt.Get()
+
+		if err != nil {
+			return err
+		}
+
+		body, err := ioutil.ReadAll(response.Body)
+
+		if err != nil {
+			return err
+		}
+
+		var result map[string]interface{}
+		err = json.Unmarshal(body, &result)
+
+		if err != nil {
+			return err
+		}
+
+		posts := result["data"].(map[string]interface{})["children"].([]interface{})
+
+		for _, post := range posts {
+			data := post.(map[string]interface{})["data"].(map[string]interface{})
+			id := data["name"].(string)
+			score := data["ups"].(float64)
+
+			index, prs := idEntryMap[id]
+
+			if prs {
+				feed.Entries[index].Score = int64(score)
+			}
+		}
+	}
+
+	return nil
 }
 
 // ProcessEntryWebPage downloads the entry web page and apply rewrite rules.
