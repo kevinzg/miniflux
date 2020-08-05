@@ -244,10 +244,12 @@ SOFTWARE.
             </span>
         </li>
         {{ end }}
+        {{ if gt .entry.Score 0 }}
         <li>
             {{/* TODO: pluralization for points */}}
             <span>{{ .entry.Score }} points</span>
         </li>
+        {{ end }}
     </ul>
     <ul class="item-meta-icons">
         <li>
@@ -521,7 +523,7 @@ var templateCommonMapChecksums = map[string]string{
 	"feed_list":        "30acc9ecc413811e73a1dad120b5d44e29564de3ba794fb07ee886b30addfb19",
 	"feed_menu":        "318d8662dda5ca9dfc75b909c8461e79c86fb5082df1428f67aaf856f19f4b50",
 	"icons":            "3dbe754a98f524a227111191d76b8c6944711b13613cc548ee9e9808fe0bffb4",
-	"item_meta":        "8306adf3ef9966de3e3dc74ca1042e51d778b027ab8cf0a60a2e94a0115982dc",
+	"item_meta":        "9997b1bde9b53fa21b56a1c03471f803f82c4fb3598f790f9bb65f553db99213",
 	"layout":           "91d2ab3f683a2ced5e9ce5cd04919e74b3e3f329a5eedcc60015b8d49ecb1b77",
 	"pagination":       "7b61288e86283c4cf0dc83bcbf8bf1c00c7cb29e60201c8c0b633b2450d2911f",
 	"settings_menu":    "e2b777630c0efdbc529800303c01d6744ed3af80ec505ac5a5b3f99c9b989156",
