@@ -12,7 +12,7 @@ import (
 	"miniflux.app/logger"
 )
 
-const schemaVersion = 35
+const schemaVersion = 33
 const fxMigrations = 1
 
 // Migrate executes database migrations.
