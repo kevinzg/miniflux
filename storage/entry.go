@@ -77,9 +77,9 @@ func (s *Storage) UpdateEntryContent(entry *model.Entry) error {
 func (s *Storage) createEntry(entry *model.Entry) error {
 	query := `
 		INSERT INTO entries
-			(title, hash, url, comments_url, published_at, content, author, score, user_id, feed_id, changed_at, document_vectors)
+			(title, hash, url, comments_url, published_at, content, author, score, original_id, user_id, feed_id, changed_at, document_vectors)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $10, $8, $9, now(), setweight(to_tsvector(substring(coalesce($1, '') for 1000000)), 'A') || setweight(to_tsvector(substring(coalesce($6, '') for 1000000)), 'B'))
+			($1, $2, $3, $4, $5, $6, $7, $10, $11, $8, $9, now(), setweight(to_tsvector(substring(coalesce($1, '') for 1000000)), 'A') || setweight(to_tsvector(substring(coalesce($6, '') for 1000000)), 'B'))
 		RETURNING
 			id, status
 	`
@@ -95,6 +95,7 @@ func (s *Storage) createEntry(entry *model.Entry) error {
 		entry.UserID,
 		entry.FeedID,
 		entry.Score,
+		entry.OriginalID,
 	).Scan(&entry.ID, &entry.Status)
 
 	if err != nil {
@@ -127,6 +128,7 @@ func (s *Storage) updateEntry(entry *model.Entry) error {
 			content=$4,
 			author=$5,
 			score=$9,
+			original_id=$10,
 			document_vectors = setweight(to_tsvector(substring(coalesce($1, '') for 1000000)), 'A') || setweight(to_tsvector(substring(coalesce($4, '') for 1000000)), 'B')
 		WHERE
 			user_id=$6 AND feed_id=$7 AND hash=$8
@@ -144,6 +146,7 @@ func (s *Storage) updateEntry(entry *model.Entry) error {
 		entry.FeedID,
 		entry.Hash,
 		entry.Score,
+		entry.OriginalID,
 	).Scan(&entry.ID)
 
 	if err != nil {
