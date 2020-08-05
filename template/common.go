@@ -244,13 +244,10 @@ SOFTWARE.
             </span>
         </li>
         {{ end }}
-
-        {{ if gt .entry.Score 0 }}
         <li>
             {{/* TODO: pluralization for points */}}
             <span>{{ .entry.Score }} points</span>
         </li>
-        {{ end }}
     </ul>
     <ul class="item-meta-icons">
         <li>
