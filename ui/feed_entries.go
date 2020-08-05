@@ -34,12 +34,19 @@ func (h *handler) showFeedEntriesPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sortingOrder := model.DefaultSortingOrder
+	direction := user.EntryDirection
+	if feed.ScoreExtractor != "" {
+		sortingOrder = "score"
+		direction = "desc"
+	}
+
 	offset := request.QueryIntParam(r, "offset", 0)
 	builder := h.store.NewEntryQueryBuilder(user.ID)
 	builder.WithFeedID(feed.ID)
 	builder.WithStatus(model.EntryStatusUnread)
-	builder.WithOrder(model.DefaultSortingOrder)
-	builder.WithDirection(user.EntryDirection)
+	builder.WithOrder(sortingOrder)
+	builder.WithDirection(direction)
 	builder.WithOffset(offset)
 	builder.WithLimit(user.EntriesPerPage)
 
