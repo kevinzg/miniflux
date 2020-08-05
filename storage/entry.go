@@ -73,6 +73,7 @@ func (s *Storage) UpdateEntryContent(entry *model.Entry) error {
 	return tx.Commit()
 }
 
+// FIXME: the order of the fields/columns is weird, see other queries too
 // createEntry add a new entry.
 func (s *Storage) createEntry(entry *model.Entry) error {
 	query := `

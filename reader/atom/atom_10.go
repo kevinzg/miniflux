@@ -85,7 +85,7 @@ func (a *atom10Entry) Transform() *model.Entry {
 	entry.Title = a.entryTitle()
 	entry.Enclosures = a.entryEnclosures()
 	entry.CommentsURL = a.entryCommentsURL()
-	entry.OriginalID = a.ID
+	entry.OriginalID = a.ID // TODO: set OriginalID in other transformers
 	return entry
 }
 

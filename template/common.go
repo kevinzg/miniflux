@@ -247,7 +247,7 @@ SOFTWARE.
 
         {{ if gt .entry.Score 0 }}
         <li>
-			{{/* TODO: pluralization for points */}}
+            {{/* TODO: pluralization for points */}}
             <span>{{ .entry.Score }} points</span>
         </li>
         {{ end }}

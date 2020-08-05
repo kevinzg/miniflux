@@ -34,6 +34,7 @@ func (h *handler) showFeedEntriesPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// FIXME: Don't hard code this stuff
 	sortingOrder := model.DefaultSortingOrder
 	direction := user.EntryDirection
 	if feed.ScoreExtractor != "" {

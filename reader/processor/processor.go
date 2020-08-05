@@ -23,6 +23,7 @@ import (
 
 // ProcessFeedEntries downloads original web page for entries and apply filters.
 func ProcessFeedEntries(store *storage.Storage, feed *model.Feed) {
+	// TODO: maybe the score extractor should be called by ProcessFeedEntries's caller
 	err := ProcessScoreExtractor(feed)
 	if err != nil {
 		logger.Debug("[Feed #%d] Error extracting score: %v", feed.ID, err)
@@ -58,6 +59,7 @@ func ProcessFeedEntries(store *storage.Storage, feed *model.Feed) {
 	wg.Wait()
 }
 
+// TODO: Move this to a different file/package
 // ProcessScoreExtractor tries to obtain the score for the feed entries
 func ProcessScoreExtractor(feed *model.Feed) (err error) {
 	defer func() {
@@ -99,6 +101,7 @@ func ProcessScoreExtractor(feed *model.Feed) (err error) {
 			return err
 		}
 
+		// The values I want are in data.children.[0..n].data.[ups, name]
 		posts := result["data"].(map[string]interface{})["children"].([]interface{})
 
 		for _, post := range posts {
