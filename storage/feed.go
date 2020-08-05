@@ -27,6 +27,7 @@ var feedListQuery = `
 		f.parsing_error_msg,
 		f.scraper_rules,
 		f.rewrite_rules,
+		f.score_extractor,
 		f.crawler,
 		f.user_agent,
 		f.username,
