@@ -27,6 +27,7 @@ var feedListQuery = `
 		f.parsing_error_msg,
 		f.scraper_rules,
 		f.rewrite_rules,
+		f.score_extractor,
 		f.crawler,
 		f.user_agent,
 		f.username,
@@ -128,6 +129,7 @@ func (s *Storage) FeedsByCategoryWithCounters(userID, categoryID int64) (model.F
 			f.parsing_error_msg,
 			f.scraper_rules,
 			f.rewrite_rules,
+			f.score_extractor,
 			f.crawler,
 			f.user_agent,
 			f.username,
@@ -237,6 +239,7 @@ func (s *Storage) fetchFeeds(feedQuery, counterQuery string, args ...interface{}
 			&feed.ParsingErrorMsg,
 			&feed.ScraperRules,
 			&feed.RewriteRules,
+			&feed.ScoreExtractor,
 			&feed.Crawler,
 			&feed.UserAgent,
 			&feed.Username,
@@ -321,6 +324,7 @@ func (s *Storage) FeedByID(userID, feedID int64) (*model.Feed, error) {
 			f.parsing_error_msg,
 			f.scraper_rules,
 			f.rewrite_rules,
+			f.score_extractor,
 			f.crawler,
 			f.user_agent,
 			f.username,
@@ -352,6 +356,7 @@ func (s *Storage) FeedByID(userID, feedID int64) (*model.Feed, error) {
 		&feed.ParsingErrorMsg,
 		&feed.ScraperRules,
 		&feed.RewriteRules,
+		&feed.ScoreExtractor,
 		&feed.Crawler,
 		&feed.UserAgent,
 		&feed.Username,
@@ -397,6 +402,7 @@ func (s *Storage) AnonFeedByID(feedID int64) (*model.Feed, error) {
 			f.parsing_error_msg,
 			f.scraper_rules,
 			f.rewrite_rules,
+			f.score_extractor,
 			f.crawler,
 			f.user_agent,
 			f.username,
@@ -420,6 +426,7 @@ func (s *Storage) AnonFeedByID(feedID int64) (*model.Feed, error) {
 		&feed.ParsingErrorMsg,
 		&feed.ScraperRules,
 		&feed.RewriteRules,
+		&feed.ScoreExtractor,
 		&feed.Crawler,
 		&feed.UserAgent,
 		&feed.Username,
@@ -459,10 +466,11 @@ func (s *Storage) CreateFeed(feed *model.Feed) error {
 			password,
 			disabled,
 			scraper_rules,
-			rewrite_rules
+			rewrite_rules,
+			score_extractor
 		)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
 		RETURNING
 			id
 	`
@@ -482,6 +490,7 @@ func (s *Storage) CreateFeed(feed *model.Feed) error {
 		feed.Disabled,
 		feed.ScraperRules,
 		feed.RewriteRules,
+		feed.ScoreExtractor,
 	).Scan(&feed.ID)
 	if err != nil {
 		return fmt.Errorf(`store: unable to create feed %q: %v`, feed.FeedURL, err)
@@ -519,6 +528,7 @@ func (s *Storage) UpdateFeed(feed *model.Feed) (err error) {
 			parsing_error_count=$9,
 			scraper_rules=$10,
 			rewrite_rules=$11,
+			score_extractor=$21,
 			crawler=$12,
 			user_agent=$13,
 			username=$14,
@@ -550,6 +560,7 @@ func (s *Storage) UpdateFeed(feed *model.Feed) (err error) {
 		feed.IgnoreHTTPCache,
 		feed.ID,
 		feed.UserID,
+		feed.ScoreExtractor,
 	)
 
 	if err != nil {

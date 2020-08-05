@@ -5,6 +5,7 @@
 package ui // import "miniflux.app/ui"
 
 import (
+	"fmt"
 	"net/http"
 
 	"miniflux.app/http/request"
@@ -34,12 +35,20 @@ func (h *handler) showFeedEntriesPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// FIXME: Don't hard code this stuff
+	sortingOrder := model.DefaultSortingOrder
+	direction := user.EntryDirection
+	if feed.ScoreExtractor != "" {
+		sortingOrder = fmt.Sprintf("score DESC, %s %s", sortingOrder, direction)
+		direction = ""
+	}
+
 	offset := request.QueryIntParam(r, "offset", 0)
 	builder := h.store.NewEntryQueryBuilder(user.ID)
 	builder.WithFeedID(feed.ID)
 	builder.WithStatus(model.EntryStatusUnread)
-	builder.WithOrder(model.DefaultSortingOrder)
-	builder.WithDirection(user.EntryDirection)
+	builder.WithOrder(sortingOrder)
+	builder.WithDirection(direction)
 	builder.WithOffset(offset)
 	builder.WithLimit(user.EntriesPerPage)
 

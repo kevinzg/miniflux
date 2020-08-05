@@ -19,6 +19,7 @@ const (
 	flagInfoHelp            = "Show application information"
 	flagVersionHelp         = "Show application version"
 	flagMigrateHelp         = "Run SQL migrations"
+	flagFxMigrateHelp       = "Run my SQL migrations"
 	flagFlushSessionsHelp   = "Flush all sessions (disconnect users)"
 	flagCreateAdminHelp     = "Create admin user"
 	flagResetPasswordHelp   = "Reset user password"
@@ -35,6 +36,7 @@ func Parse() {
 		flagInfo            bool
 		flagVersion         bool
 		flagMigrate         bool
+		flagFxMigrate       bool
 		flagFlushSessions   bool
 		flagCreateAdmin     bool
 		flagResetPassword   bool
@@ -49,6 +51,7 @@ func Parse() {
 	flag.BoolVar(&flagVersion, "version", false, flagVersionHelp)
 	flag.BoolVar(&flagVersion, "v", false, flagVersionHelp)
 	flag.BoolVar(&flagMigrate, "migrate", false, flagMigrateHelp)
+	flag.BoolVar(&flagFxMigrate, "fx-migrate", false, flagFxMigrateHelp)
 	flag.BoolVar(&flagFlushSessions, "flush-sessions", false, flagFlushSessionsHelp)
 	flag.BoolVar(&flagCreateAdmin, "create-admin", false, flagCreateAdminHelp)
 	flag.BoolVar(&flagResetPassword, "reset-password", false, flagResetPasswordHelp)
@@ -112,6 +115,11 @@ func Parse() {
 
 	if flagMigrate {
 		database.Migrate(db)
+		return
+	}
+
+	if flagFxMigrate {
+		database.FxMigrate(db)
 		return
 	}
 

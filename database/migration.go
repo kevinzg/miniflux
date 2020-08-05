@@ -13,6 +13,7 @@ import (
 )
 
 const schemaVersion = 33
+const fxMigrations = 1
 
 // Migrate executes database migrations.
 func Migrate(db *sql.DB) {
@@ -44,6 +45,35 @@ func Migrate(db *sql.DB) {
 		}
 
 		if _, err := tx.Exec(`INSERT INTO schema_version (version) VALUES ($1)`, version); err != nil {
+			tx.Rollback()
+			logger.Fatal("[Migrate] %v", err)
+		}
+
+		if err := tx.Commit(); err != nil {
+			logger.Fatal("[Migrate] %v", err)
+		}
+	}
+}
+
+// FxMigrate executes my own migrations.
+func FxMigrate(db *sql.DB) {
+	// My migrations are idempotent for now so I'm not saving the current version
+	currentVersion := 0
+
+	fmt.Println("Latest Fx migration:", fxMigrations)
+
+	for version := currentVersion + 1; version <= fxMigrations; version++ {
+		fmt.Println("Applying Fx migration:", version)
+
+		tx, err := db.Begin()
+		if err != nil {
+			logger.Fatal("[Migrate] %v", err)
+		}
+
+		rawSQL := SqlMap["fx_migration_"+strconv.Itoa(version)]
+		// fmt.Println(rawSQL)
+		_, err = tx.Exec(rawSQL)
+		if err != nil {
 			tx.Rollback()
 			logger.Fatal("[Migrate] %v", err)
 		}

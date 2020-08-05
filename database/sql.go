@@ -3,6 +3,10 @@
 package database // import "miniflux.app/database"
 
 var SqlMap = map[string]string{
+	"fx_migration_1": `alter table feeds add column if not exists score_extractor text default '';
+alter table entries add column if not exists score int default 0;
+alter table entries add column if not exists original_id text default '';
+`,
 	"schema_version_1": `create table schema_version (
     version text not null
 );
@@ -215,6 +219,7 @@ alter table users add column entry_direction entry_sorting_direction default 'as
 }
 
 var SqlMapChecksums = map[string]string{
+	"fx_migration_1":    "c825c79d4fc8a9d837af85c55c213a65ab52d88514e194a7317edb2c3c5ae886",
 	"schema_version_1":  "00b2fa9e945565625c93ef9d4242a8b6583dc3cd7edf38d2fc95c0f3f7b926ae",
 	"schema_version_10": "8faf15ddeff7c8cc305e66218face11ed92b97df2bdc2d0d7944d61441656795",
 	"schema_version_11": "dc5bbc302e01e425b49c48ddcd8e29e3ab2bb8e73a6cd1858a6ba9fbec0b5243",
