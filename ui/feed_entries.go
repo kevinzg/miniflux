@@ -5,6 +5,7 @@
 package ui // import "miniflux.app/ui"
 
 import (
+	"fmt"
 	"net/http"
 
 	"miniflux.app/http/request"
@@ -38,8 +39,8 @@ func (h *handler) showFeedEntriesPage(w http.ResponseWriter, r *http.Request) {
 	sortingOrder := model.DefaultSortingOrder
 	direction := user.EntryDirection
 	if feed.ScoreExtractor != "" {
-		sortingOrder = "score"
-		direction = "desc"
+		sortingOrder = fmt.Sprintf("score DESC, %s %s", sortingOrder, direction)
+		direction = ""
 	}
 
 	offset := request.QueryIntParam(r, "offset", 0)
